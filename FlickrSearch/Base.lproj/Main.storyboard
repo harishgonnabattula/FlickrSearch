@@ -48,7 +48,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ddA-FH-YyB">
-                                    <rect key="frame" x="8" y="15" width="43.5" height="21"/>
+                                    <rect key="frame" x="8" y="7" width="43.5" height="37"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -56,9 +56,10 @@
                             </subviews>
                             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             <constraints>
-                                <constraint firstAttribute="bottomMargin" secondItem="ddA-FH-YyB" secondAttribute="bottom" constant="6" id="6UB-zf-g3S"/>
-                                <constraint firstItem="ddA-FH-YyB" firstAttribute="leading" secondItem="vSL-Uh-INL" secondAttribute="leadingMargin" id="9LM-hX-bhw"/>
-                                <constraint firstItem="ddA-FH-YyB" firstAttribute="top" secondItem="vSL-Uh-INL" secondAttribute="topMargin" constant="7" id="jXD-Ul-y2b"/>
+                                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ddA-FH-YyB" secondAttribute="trailing" constant="20" symbolic="YES" id="Zr9-2P-fEK"/>
+                                <constraint firstAttribute="bottom" secondItem="ddA-FH-YyB" secondAttribute="bottom" constant="6" id="goh-WM-Kma"/>
+                                <constraint firstItem="ddA-FH-YyB" firstAttribute="top" secondItem="vSL-Uh-INL" secondAttribute="top" constant="7" id="m0r-53-6Wc"/>
+                                <constraint firstItem="ddA-FH-YyB" firstAttribute="leading" secondItem="vSL-Uh-INL" secondAttribute="leading" constant="8" id="zL8-2Y-BEf"/>
                             </constraints>
                             <connections>
                                 <outlet property="resultsLabel" destination="ddA-FH-YyB" id="Y0F-CR-ZGb"/>

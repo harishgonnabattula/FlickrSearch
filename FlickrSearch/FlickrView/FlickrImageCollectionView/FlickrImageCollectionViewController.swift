@@ -16,6 +16,7 @@ fileprivate let sectionInsets = UIEdgeInsets(top: 10.0, left: 5.0, bottom: 50.0,
 fileprivate let HEADER_IDENTIFIER = "header"
 fileprivate let FOOTER_IDENTIFIER = "footer"
 let HEIGHT = CGFloat(50.0)
+fileprivate let NIB_NAME = "FlickrImageCollectionViewCell"
 
 class FlickrImageCollectionViewController: UICollectionViewController {
 
@@ -32,14 +33,19 @@ class FlickrImageCollectionViewController: UICollectionViewController {
         super.viewDidLoad()
 
         // Register cell classes
-        self.collectionView!.register(UINib(nibName: "FlickrImageCollectionViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: reuseIdentifier)
+        self.collectionView!.register(UINib(nibName: NIB_NAME, bundle: Bundle.main), forCellWithReuseIdentifier: reuseIdentifier)
+        
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
-        layout?.sectionFootersPinToVisibleBounds = true
+        layout?.sectionHeadersPinToVisibleBounds = true //Sticking header
+        layout?.sectionFootersPinToVisibleBounds = true //Sticking footer
+        
+        // Without this the footer leave a space between its postion and margin.
         collectionView.contentInsetAdjustmentBehavior = .never
+        
         collectionView.scrollsToTop = true
     }
     
+    // For device rotation
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
         layout?.invalidateLayout()
@@ -75,7 +81,6 @@ class FlickrImageCollectionViewController: UICollectionViewController {
             let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
                                                                              withReuseIdentifier: FOOTER_IDENTIFIER,
                                                                              for: indexPath) as! FlickrFooterCollectionReusableView
-            
             return footerView
         default:
             assert(false, "Unexpected element kind")
@@ -88,9 +93,6 @@ class FlickrImageCollectionViewController: UICollectionViewController {
         cell.configureCell(data: dataSource[indexPath.row])
         return cell
     }
-    
-    
-    
 }
 
 
@@ -124,6 +126,7 @@ extension FlickrImageCollectionViewController: UICollectionViewDelegateFlowLayou
 // MARK: Updating datasource
 extension FlickrImageCollectionViewController {
     
+    // Updating datasource from child controller
     func updateDataSource(data: FlickrModel?, append: Bool, photos: [FlickrPhoto] = []) {
         guard let model = data else {
             if photos.count == 0 {
@@ -152,6 +155,7 @@ extension FlickrImageCollectionViewController {
         self.collectionView.reloadData()
     }
     
+    // Updating search text from child controller. Used in the header.
     func updateSearchText(value: String) {
         self.searchText = value
     }

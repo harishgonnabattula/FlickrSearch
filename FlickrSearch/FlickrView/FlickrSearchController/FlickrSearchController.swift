@@ -11,6 +11,8 @@ import Kingfisher
 import Lightbox
 import Alamofire
 
+fileprivate let BUFFER_SIZE = 6
+
 class FlickrSearchController: FlickrImageCollectionViewController {
     
     private let apiManager = APIManager.init()
@@ -22,9 +24,10 @@ class FlickrSearchController: FlickrImageCollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         initSearchView()
-        fetchFlickrPhotos()
-        ImageCache.default.maxDiskCacheSize = CACHE_SIZE
+        fetchFlickrPhotos() // Initial Photos fetch
+        ImageCache.default.maxDiskCacheSize = CACHE_SIZE  // Limiting Image cache size
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,18 +62,21 @@ extension FlickrSearchController: UICollectionViewDataSourcePrefetching {
         
         if indexPaths.contains(where: isLoadingCell) {
             self.currentPage += 1
+            // Until the current page is less than total pages, keep making calls
             if self.currentPage <= self.totalPages {
                 if !isFetching {
                     fetchFlickrPhotos(with: searchText, pageNo: self.currentPage)
                 }
             }
             else {
-                print("Page overflow")
+                print("Page overflow") // When our current page crosses the total pages.
             }
         }
     }
+    
+    // If current index path is greater than the total count - 6 then we will make the next page call.
     func isLoadingCell(for indexPath: IndexPath) -> Bool {
-        return indexPath.row >= dataSource.count - 6
+        return indexPath.row >= dataSource.count - BUFFER_SIZE
     }
 }
 

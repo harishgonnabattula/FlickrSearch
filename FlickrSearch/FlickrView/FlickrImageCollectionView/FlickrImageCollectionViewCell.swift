@@ -18,6 +18,10 @@ class FlickrImageCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(FlickrImageCollectionViewCell.handleTap(sender:)))
+        tweakImageView()
+    }
+    
+    private func tweakImageView() {
         imageView.addGestureRecognizer(tapGesture)
         imageView.layer.cornerRadius = 5
         imageView.clipsToBounds = true
