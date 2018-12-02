@@ -35,15 +35,15 @@
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="8G1-O3-bZk">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="k2z-ei-40v">
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" sectionInsetReference="safeArea" id="k2z-ei-40v">
                             <size key="itemSize" width="50" height="50"/>
                             <size key="headerReferenceSize" width="50" height="50"/>
-                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="50" height="50"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells/>
-                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="header" id="vSL-Uh-INL" customClass="FlickrImageCollectionReusableView" customModule="FlickrSearch" customModuleProvider="target">
+                        <collectionReusableView key="sectionHeaderView" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="header" id="vSL-Uh-INL" customClass="FlickrImageCollectionReusableView" customModule="FlickrSearch" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>
@@ -54,6 +54,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="bottomMargin" secondItem="ddA-FH-YyB" secondAttribute="bottom" constant="6" id="6UB-zf-g3S"/>
                                 <constraint firstItem="ddA-FH-YyB" firstAttribute="leading" secondItem="vSL-Uh-INL" secondAttribute="leadingMargin" id="9LM-hX-bhw"/>
@@ -61,6 +62,36 @@
                             </constraints>
                             <connections>
                                 <outlet property="resultsLabel" destination="ddA-FH-YyB" id="Y0F-CR-ZGb"/>
+                            </connections>
+                        </collectionReusableView>
+                        <collectionReusableView key="sectionFooterView" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="footer" id="ANN-ek-JwF" customClass="FlickrFooterCollectionReusableView" customModule="FlickrSearch" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="50" width="375" height="50"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                            <subviews>
+                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="1ts-PM-kWp">
+                                    <rect key="frame" x="147.5" y="0.0" width="80" height="50"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s6f-pA-QQD">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <fontDescription key="fontDescription" type="system" weight="light" pointSize="14"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="hZ5-y0-E19">
+                                            <rect key="frame" x="60" y="0.0" width="20" height="50"/>
+                                        </activityIndicatorView>
+                                    </subviews>
+                                </stackView>
+                            </subviews>
+                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                            <constraints>
+                                <constraint firstItem="1ts-PM-kWp" firstAttribute="centerX" secondItem="ANN-ek-JwF" secondAttribute="centerX" id="ZIY-jc-XuL"/>
+                                <constraint firstItem="1ts-PM-kWp" firstAttribute="centerY" secondItem="ANN-ek-JwF" secondAttribute="centerY" id="ri1-dg-r5a"/>
+                            </constraints>
+                            <viewLayoutGuide key="safeArea" id="x8N-pe-PY5"/>
+                            <connections>
+                                <outlet property="activityIndicator" destination="hZ5-y0-E19" id="ljf-jt-uIT"/>
+                                <outlet property="updateStatusLabel" destination="s6f-pA-QQD" id="iW3-4j-lEB"/>
                             </connections>
                         </collectionReusableView>
                         <connections>
@@ -75,88 +106,5 @@
             </objects>
             <point key="canvasLocation" x="1165.5999999999999" y="-564.46776611694156"/>
         </scene>
-        <!--Login-->
-        <scene sceneID="Gx3-pH-oIK">
-            <objects>
-                <viewController storyboardIdentifier="Login" title="Login" id="9T9-4P-eFF" customClass="LoginViewController" customModule="FlickrSearch" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Qte-p2-wPs">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LoginBG" translatesAutoresizingMaskIntoConstraints="NO" id="cdo-v6-8bT">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                            </imageView>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="Kix-wE-hLo">
-                                <rect key="frame" x="50" y="258.5" width="275" height="150"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="hNP-3v-xk0">
-                                        <rect key="frame" x="0.0" y="0.0" width="275" height="39.5"/>
-                                        <nil key="textColor"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" enablesReturnKeyAutomatically="YES" textContentType="name"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="9T9-4P-eFF" id="YRA-x5-rQr"/>
-                                        </connections>
-                                    </textField>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zce-wh-1vf">
-                                        <rect key="frame" x="0.0" y="55.5" width="275" height="39"/>
-                                        <nil key="textColor"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" secureTextEntry="YES" textContentType="password"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="9T9-4P-eFF" id="EBW-lS-IjB"/>
-                                        </connections>
-                                    </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hOi-Zt-pKW">
-                                        <rect key="frame" x="0.0" y="110.5" width="275" height="39.5"/>
-                                        <color key="backgroundColor" red="0.0" green="0.32852089410000002" blue="0.57488495110000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <color key="tintColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <state key="normal" title="Login"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="5"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
-                                                <integer key="value" value="1"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="color" keyPath="layer.borderColor">
-                                                <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                        <connections>
-                                            <action selector="performLogin:" destination="9T9-4P-eFF" eventType="touchUpInside" id="8QP-oH-NfA"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="ygD-TX-bJu"/>
-                                </constraints>
-                            </stackView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <constraints>
-                            <constraint firstItem="cdo-v6-8bT" firstAttribute="bottom" secondItem="FDW-TE-Nc2" secondAttribute="bottom" id="ECl-8d-7ew"/>
-                            <constraint firstItem="cdo-v6-8bT" firstAttribute="top" secondItem="Qte-p2-wPs" secondAttribute="top" id="FCO-AB-WZd"/>
-                            <constraint firstItem="Kix-wE-hLo" firstAttribute="leading" secondItem="FDW-TE-Nc2" secondAttribute="leading" constant="50" id="GaF-fx-qDr"/>
-                            <constraint firstItem="FDW-TE-Nc2" firstAttribute="trailing" secondItem="Kix-wE-hLo" secondAttribute="trailing" constant="50" id="HE1-A6-ssD"/>
-                            <constraint firstItem="Kix-wE-hLo" firstAttribute="centerY" secondItem="Qte-p2-wPs" secondAttribute="centerY" id="HeH-aw-Z7y"/>
-                            <constraint firstItem="cdo-v6-8bT" firstAttribute="leading" secondItem="FDW-TE-Nc2" secondAttribute="leading" id="J2S-pk-rIL"/>
-                            <constraint firstItem="Kix-wE-hLo" firstAttribute="centerX" secondItem="Qte-p2-wPs" secondAttribute="centerX" id="lId-Hj-Zii"/>
-                            <constraint firstItem="cdo-v6-8bT" firstAttribute="trailing" secondItem="FDW-TE-Nc2" secondAttribute="trailing" id="xQl-Xi-M4A"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="FDW-TE-Nc2"/>
-                    </view>
-                    <connections>
-                        <outlet property="passwordField" destination="zce-wh-1vf" id="9eh-HJ-GFx"/>
-                        <outlet property="userNameField" destination="hNP-3v-xk0" id="5n2-69-3LE"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="b4N-Lx-XCv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1166" y="-1263"/>
-        </scene>
     </scenes>
-    <resources>
-        <image name="LoginBG" width="750" height="1334"/>
-    </resources>
 </document>

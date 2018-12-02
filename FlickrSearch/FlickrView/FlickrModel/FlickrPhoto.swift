@@ -15,8 +15,8 @@ struct FlickrPhoto: Codable {
     private var server: String
     private var farm: Int
     private var url_s: String?
-    private var width_s: String?
-    private var height_s: String?
+    var width_s: String?
+    var height_s: String?
     var title: String
     var ispublic: Int
     
@@ -26,8 +26,5 @@ struct FlickrPhoto: Codable {
 }
 
 
-//
-//https://farm1.staticflickr.com/2/1418878_1e92283336_o.jpg
-//
-//https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|png)
+
 

@@ -10,5 +10,4 @@ import UIKit
 
 class FlickrImageCollectionReusableView: UICollectionReusableView {
     @IBOutlet weak var resultsLabel: UILabel!
-    
 }

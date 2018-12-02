@@ -17,28 +17,26 @@ class FlickrSearchController: FlickrImageCollectionViewController {
     private var currentPage = 1
     private var totalPages = 0
     private let searchController = UISearchController(searchResultsController: nil)
-    private var searchText = "pokemon"
+    private var searchText = DEFAULT_SEARCH
     private var isFetching = false
-    private let reachability = Reachability()!
-    private var manager = DataManager()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         initSearchView()
         fetchFlickrPhotos()
-        NotificationCenter.default.addObserver(self, selector: #selector(FlickrSearchController.handleImageTap(sender:)), name: Notification.Name(rawValue: "Image Pressed"), object: nil)
-        ImageCache.default.maxDiskCacheSize = 50 * 1024 * 1024
+        NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
+        
+        ImageCache.default.maxDiskCacheSize = CACHE_SIZE
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
-//        do{
-//            try reachability.startNotifier()
-//        }catch{
-//            print("could not start reachability notifier")
-//        }
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(FlickrSearchController.handleImageTap(sender:)), name: Notification.Name(rawValue: "Image Pressed"), object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     private func initSearchView() {
         // Setup the Search Controller
@@ -50,12 +48,14 @@ class FlickrSearchController: FlickrImageCollectionViewController {
         definesPresentationContext = true
     }
     
-    private func fetchFlickrPhotos(with text: String = "pokemon", pageNo: Int = 1) {
+    private func fetchFlickrPhotos(with text: String = DEFAULT_SEARCH, pageNo: Int = 1) {
         apiManager.fetchFlickrPhotos(with: text, page: pageNo) { (results) in
+            self.isFetching = false
             guard let data = results.response else {
+                NotificationCenter.default.post(name: NSNotification.Name("Error"), object: true)
                 return
             }
-            self.isFetching = false
+            NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: self.isFetching)
             self.totalPages = data.pages
             self.updateSearchText(value: text)
             self.updateDataSource(data: data, append: pageNo == 1)
@@ -68,12 +68,7 @@ extension FlickrSearchController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchText = searchBar.text!
         fetchFlickrPhotos(with: searchBar.text!)
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
+        NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
     }
 }
 
@@ -86,6 +81,7 @@ extension FlickrSearchController: UICollectionViewDataSourcePrefetching {
                 if !isFetching {
                     isFetching = true
                     fetchFlickrPhotos(with: searchText, pageNo: self.currentPage)
+                    NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
                 }
             }
             else {
@@ -103,7 +99,10 @@ extension FlickrSearchController {
         guard var photo = sender.object as? FlickrPhoto, let url = photo.photoUrl else {
             return
         }
-        let images = [ LightboxImage(imageURL: url, text: photo.title)]
+        guard let img = ImageCache.default.retrieveImageInMemoryCache(forKey: url.absoluteString) else {
+            return
+        }
+        let images = [ LightboxImage(image: img, text: photo.title, videoURL: nil)]
         // Create an instance of LightboxController.
         let controller = LightboxController(images: images)
         
@@ -114,19 +113,3 @@ extension FlickrSearchController {
         present(controller, animated: true, completion: nil)
     }
 }
-
-//extension FlickrSearchController {
-//    @objc func reachabilityChanged(note: Notification) {
-//
-//        let reachability = note.object as! Reachability
-//
-//        switch reachability.connection {
-//        case .wifi:
-//            print("Reachable via WiFi")
-//        case .cellular:
-//            print("Reachable via Cellular")
-//        case .none:
-//           manager.saveData(items: dataSource)
-//        }
-//    }
-//}

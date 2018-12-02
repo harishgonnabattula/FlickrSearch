@@ -12,20 +12,35 @@ import Lightbox
 fileprivate let reuseIdentifier = "FlickrImage"
 fileprivate let SECTIONS_NUM = 1
 fileprivate let itemsPerRow: CGFloat = 3
-fileprivate let sectionInsets = UIEdgeInsets(top: 10.0, left: 0.0, bottom: 50.0, right: 0.0)
-fileprivate let headerIdentifier = "header"
+fileprivate let sectionInsets = UIEdgeInsets(top: 10.0, left: 5.0, bottom: 50.0, right: 5.0)
+fileprivate let HEADER_IDENTIFIER = "header"
+fileprivate let FOOTER_IDENTIFIER = "footer"
+let HEIGHT = CGFloat(50.0)
 
 class FlickrImageCollectionViewController: UICollectionViewController {
 
     private(set) var dataSource = [FlickrPhoto]()
-    private var searchText = ""
-    
+    private var searchText = DEFAULT_SEARCH
+    fileprivate var SUPPLEMENTARY_VIEW_SIZE : CGSize {
+        get {
+            return CGSize(width: collectionView.bounds.size.width, height: HEIGHT)
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Register cell classes
         self.collectionView!.register(UINib(nibName: "FlickrImageCollectionViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: reuseIdentifier)
-
+        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+        layout?.sectionHeadersPinToVisibleBounds = true
+        layout?.sectionFootersPinToVisibleBounds = true
+        collectionView.contentInsetAdjustmentBehavior = .never
+        collectionView.scrollsToTop = true
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+        layout?.invalidateLayout()
     }
     
     // MARK: UICollectionViewDataSource
@@ -40,19 +55,29 @@ class FlickrImageCollectionViewController: UICollectionViewController {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.bounds.size.width, height: 50.0)
+        return SUPPLEMENTARY_VIEW_SIZE
     }
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return SUPPLEMENTARY_VIEW_SIZE
+    }
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                             withReuseIdentifier: headerIdentifier,
+                                                                             withReuseIdentifier: HEADER_IDENTIFIER,
                                                                              for: indexPath) as! FlickrImageCollectionReusableView
             headerView.resultsLabel.text = "Showing results for \(searchText)"
             return headerView
+        case UICollectionView.elementKindSectionFooter:
+            let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                             withReuseIdentifier: FOOTER_IDENTIFIER,
+                                                                             for: indexPath) as! FlickrFooterCollectionReusableView
+            
+            return footerView
         default:
             assert(false, "Unexpected element kind")
+            
         }
     }
     
@@ -61,9 +86,13 @@ class FlickrImageCollectionViewController: UICollectionViewController {
         cell.configureCell(data: dataSource[indexPath.row])
         return cell
     }
-
+    
+    
+    
 }
 
+
+// MARK: FLow Layout
 extension FlickrImageCollectionViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
@@ -89,11 +118,16 @@ extension FlickrImageCollectionViewController: UICollectionViewDelegateFlowLayou
     }
 }
 
+
+// MARK: Updating datasource
 extension FlickrImageCollectionViewController {
     
-    func updateDataSource(data: FlickrModel?, append: Bool) {
+    func updateDataSource(data: FlickrModel?, append: Bool, photos: [FlickrPhoto] = []) {
         guard let model = data else {
-            self.dataSource = []
+            if photos.count == 0 {
+                self.dataSource = []
+            }
+            self.dataSource = photos
             self.collectionView.reloadData()
             return
         }

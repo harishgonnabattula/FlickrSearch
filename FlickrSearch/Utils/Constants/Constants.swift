@@ -8,30 +8,6 @@
 
 import Foundation
 
-
-enum StoryBoardIDs: String {
-    case LOGIN = "Login"
-    case FLICK_SEARCH = "FlickrSearchNavigation"
-}
-
-enum LoginStatusCodes {
-    case LoginSuccess
-    case LoginFailed
-}
-
-enum AlertStatus: String {
-    case Loading
-    case Uploading
-    case Success
-    case Failure
-    case Other
-}
-
-
-
-let DELAY_TIME = 2.0
-
-
 struct API {
     
     let base_url = "https://api.flickr.com/services/rest/"
@@ -55,6 +31,5 @@ extension String {
     }
 }
 
-
-
-//https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=675894853ae8ec6c242fa4c077bcf4a0&text=dogs&extras=url_s&format=json&nojsoncallback=1
+let DEFAULT_SEARCH = "Mountains"
+let CACHE_SIZE = UInt(50 * 1024 * 1024)

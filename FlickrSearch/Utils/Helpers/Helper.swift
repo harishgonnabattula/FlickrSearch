@@ -9,31 +9,6 @@
 import UIKit
 import Alamofire
 
-struct Helper {
-    static func getViewControllerBy(id: StoryBoardIDs) -> UIViewController {
-        return UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: id.rawValue)
-    }
-}
-
-struct AuthenticationHelper {
-
-    private static func checkAuthorization() -> Bool{
-        //return !(Auth.auth().currentUser == nil)
-        return true
-    }
-    static func loadVC() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
-        if !checkAuthorization() {
-            appDelegate.window?.rootViewController = Helper.getViewControllerBy(id: StoryBoardIDs.LOGIN)
-        }
-        else{
-            appDelegate.window?.rootViewController = Helper.getViewControllerBy(id: StoryBoardIDs.FLICK_SEARCH)
-        }
-    }
-}
-
-
 typealias FlickrFetchResults = (response: FlickrModel?,error: Error?)
 
 struct APIManager {
@@ -49,13 +24,14 @@ struct APIManager {
         guard let search_url = Api.base_url.toURL() else {
             return
         }
-        
-        Alamofire.request(search_url, method: .get, parameters: searchParams, encoding: URLEncoding.default, headers: nil).validate().responseJSON { (response) in
+        getRequest(url: search_url, params: searchParams) { (response) in
             
-            if response.result.isSuccess && response.data != nil{
+            if response.result.isSuccess && response.data != nil {
                 do {
                     let decoder = JSONDecoder()
                     let flickrResponse = try decoder.decode(Response.self, from: response.data!)
+                    // TODO:
+                    // Save in Core Data
                     completionHandler((flickrResponse.photos,nil))
                 }
                 catch {
@@ -63,39 +39,28 @@ struct APIManager {
                     completionHandler((nil,nil)) //Fill the error
                 }
             }
+            else if response.response == nil {
+                // TODO:
+                //No Internet
+                //Load from Core Data
+            }
             else {
                 completionHandler((nil,response.error))
             }
         }
     }
+    
+    private func getRequest(url: URL, params: Parameters?, completionHandler: @escaping (DataResponse<Any>) -> Void) {
+        
+        Alamofire.request(url, method: .get, parameters: params, encoding: URLEncoding.default, headers: nil).validate().responseJSON { (response) in
+                completionHandler(response)
+            }
+    }
+    
 }
 
 
 struct DataManager {
     
-    private var responseObject = [FlickrPhoto]()
     
-    mutating func saveData(items: [FlickrPhoto]) {
-        self.responseObject = items
-        do {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: self.responseObject, requiringSecureCoding: false)
-            UserDefaults.standard.set(data, forKey: "response")
-        }
-        catch {
-            print("Error archiving")
-        }
-    }
-    
-    func loadData() {
-        
-        let data = UserDefaults.standard.data(forKey: "response")
-        do {
-            if let ourData = data, let response = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(ourData) as? [FlickrPhoto] {
-                print(response)
-            }
-        }
-        catch {
-            print("Error unarchiving")
-        }
-    }
 }
