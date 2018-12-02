@@ -27,6 +27,7 @@ class FlickrImageCollectionViewCell: UICollectionViewCell {
             return
         }
         photo = data
+        imageView.kf.indicatorType = .activity
         imageView.kf.setImage(with: url)
     }
     

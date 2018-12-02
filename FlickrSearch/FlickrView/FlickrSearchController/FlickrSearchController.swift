@@ -6,7 +6,6 @@
 //  Copyright © 2018 Ninja. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Kingfisher
 import Lightbox
@@ -20,12 +19,26 @@ class FlickrSearchController: FlickrImageCollectionViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private var searchText = "pokemon"
     private var isFetching = false
+    private let reachability = Reachability()!
+    private var manager = DataManager()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initSearchView()
         fetchFlickrPhotos()
         NotificationCenter.default.addObserver(self, selector: #selector(FlickrSearchController.handleImageTap(sender:)), name: Notification.Name(rawValue: "Image Pressed"), object: nil)
+        ImageCache.default.maxDiskCacheSize = 50 * 1024 * 1024
     }
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        NotificationCenter.default.addObserver(self, selector: #selector(reachabilityChanged(note:)), name: .reachabilityChanged, object: reachability)
+//        do{
+//            try reachability.startNotifier()
+//        }catch{
+//            print("could not start reachability notifier")
+//        }
+//    }
     
     private func initSearchView() {
         // Setup the Search Controller
@@ -57,8 +70,6 @@ extension FlickrSearchController: UISearchBarDelegate {
         fetchFlickrPhotos(with: searchBar.text!)
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        //updateDataSource(data: nil)
-        ImageCache.default.clearMemoryCache() // To prevent caching all the search result images
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -103,3 +114,19 @@ extension FlickrSearchController {
         present(controller, animated: true, completion: nil)
     }
 }
+
+//extension FlickrSearchController {
+//    @objc func reachabilityChanged(note: Notification) {
+//
+//        let reachability = note.object as! Reachability
+//
+//        switch reachability.connection {
+//        case .wifi:
+//            print("Reachable via WiFi")
+//        case .cellular:
+//            print("Reachable via Cellular")
+//        case .none:
+//           manager.saveData(items: dataSource)
+//        }
+//    }
+//}

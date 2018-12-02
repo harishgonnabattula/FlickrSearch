@@ -70,3 +70,32 @@ struct APIManager {
     }
 }
 
+
+struct DataManager {
+    
+    private var responseObject = [FlickrPhoto]()
+    
+    mutating func saveData(items: [FlickrPhoto]) {
+        self.responseObject = items
+        do {
+            let data = try NSKeyedArchiver.archivedData(withRootObject: self.responseObject, requiringSecureCoding: false)
+            UserDefaults.standard.set(data, forKey: "response")
+        }
+        catch {
+            print("Error archiving")
+        }
+    }
+    
+    func loadData() {
+        
+        let data = UserDefaults.standard.data(forKey: "response")
+        do {
+            if let ourData = data, let response = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(ourData) as? [FlickrPhoto] {
+                print(response)
+            }
+        }
+        catch {
+            print("Error unarchiving")
+        }
+    }
+}
