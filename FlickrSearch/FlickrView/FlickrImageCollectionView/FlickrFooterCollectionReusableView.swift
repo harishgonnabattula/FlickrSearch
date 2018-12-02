@@ -15,7 +15,6 @@ class FlickrFooterCollectionReusableView: UICollectionReusableView {
     @IBOutlet weak var updateStatusLabel: UILabel!
     
     override func awakeFromNib() {
-        
         NotificationCenter.default.addObserver(self, selector: #selector(FlickrFooterCollectionReusableView.updateStatus(sender:)), name: NSNotification.Name("In Process"),object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(FlickrFooterCollectionReusableView.updateErrorStatus(sender:)), name: NSNotification.Name("Error"),object: nil)
         activityIndicator.hidesWhenStopped = true

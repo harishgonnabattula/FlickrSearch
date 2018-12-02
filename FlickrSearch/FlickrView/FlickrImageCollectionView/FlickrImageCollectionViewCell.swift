@@ -36,5 +36,4 @@ class FlickrImageCollectionViewCell: UICollectionViewCell {
     @objc func handleTap(sender: UITapGestureRecognizer) {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "Image Pressed"), object: photo)
     }
-
 }

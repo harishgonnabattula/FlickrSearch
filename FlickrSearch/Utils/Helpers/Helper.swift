@@ -58,9 +58,3 @@ struct APIManager {
     }
     
 }
-
-
-struct DataManager {
-    
-    
-}

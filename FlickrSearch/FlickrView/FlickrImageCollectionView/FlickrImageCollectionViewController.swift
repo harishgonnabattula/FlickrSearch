@@ -21,11 +21,13 @@ class FlickrImageCollectionViewController: UICollectionViewController {
 
     private(set) var dataSource = [FlickrPhoto]()
     private var searchText = DEFAULT_SEARCH
-    fileprivate var SUPPLEMENTARY_VIEW_SIZE : CGSize {
+    private var SUPPLEMENTARY_VIEW_SIZE : CGSize {
         get {
             return CGSize(width: collectionView.bounds.size.width, height: HEIGHT)
         }
     }
+    let userDefaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -131,11 +133,20 @@ extension FlickrImageCollectionViewController {
             self.collectionView.reloadData()
             return
         }
-        if !append {
+        if append {
             self.dataSource += model.photo
         }
         else {
             self.dataSource = model.photo
+        }
+        do {
+            //Todo: Handling Offline. Should change. Inefficient way
+            let jsonData = try JSONEncoder().encode(self.dataSource)
+            userDefaults.set(searchText, forKey: "lastQuery")
+            userDefaults.set(jsonData, forKey: searchText)
+        }
+        catch {
+            print("Error")
         }
         
         self.collectionView.reloadData()

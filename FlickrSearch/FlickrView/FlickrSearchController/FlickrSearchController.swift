@@ -9,7 +9,7 @@
 import UIKit
 import Kingfisher
 import Lightbox
-
+import Alamofire
 
 class FlickrSearchController: FlickrImageCollectionViewController {
     
@@ -20,13 +20,10 @@ class FlickrSearchController: FlickrImageCollectionViewController {
     private var searchText = DEFAULT_SEARCH
     private var isFetching = false
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         initSearchView()
         fetchFlickrPhotos()
-        NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
-        
         ImageCache.default.maxDiskCacheSize = CACHE_SIZE
     }
     
@@ -47,31 +44,16 @@ class FlickrSearchController: FlickrImageCollectionViewController {
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
     }
-    
-    private func fetchFlickrPhotos(with text: String = DEFAULT_SEARCH, pageNo: Int = 1) {
-        apiManager.fetchFlickrPhotos(with: text, page: pageNo) { (results) in
-            self.isFetching = false
-            guard let data = results.response else {
-                NotificationCenter.default.post(name: NSNotification.Name("Error"), object: true)
-                return
-            }
-            NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: self.isFetching)
-            self.totalPages = data.pages
-            self.updateSearchText(value: text)
-            self.updateDataSource(data: data, append: pageNo == 1)
-        }
-    }
-
 }
 
 extension FlickrSearchController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchText = searchBar.text!
         fetchFlickrPhotos(with: searchBar.text!)
-        NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
     }
 }
 
+// MARK: Prefetching for inifinte scrolling
 extension FlickrSearchController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         
@@ -79,9 +61,7 @@ extension FlickrSearchController: UICollectionViewDataSourcePrefetching {
             self.currentPage += 1
             if self.currentPage <= self.totalPages {
                 if !isFetching {
-                    isFetching = true
                     fetchFlickrPhotos(with: searchText, pageNo: self.currentPage)
-                    NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
                 }
             }
             else {
@@ -111,5 +91,44 @@ extension FlickrSearchController {
         
         // Present your controller.
         present(controller, animated: true, completion: nil)
+    }
+}
+
+// MARK: Fetching Photos Logic with Offline Handling
+
+extension FlickrSearchController {
+    private func fetchFlickrPhotos(with text: String = DEFAULT_SEARCH, pageNo: Int = 1) {
+        updateSearchText(value: text)
+        
+        if !NetworkReachabilityManager()!.isReachable {
+            // Wait for the collection view to initialize before sending notification. This is for the info on the footer.
+            DispatchQueue.main.asyncAfter(deadline: .now()+1) {
+                NotificationCenter.default.post(name: NSNotification.Name("Error"), object: true)
+            }
+            guard let key = userDefaults.object(forKey: "lastQuery") as? String, let data = userDefaults.data(forKey: key) else {
+                return
+            }
+            do {
+                let photos = try JSONDecoder().decode(Array<FlickrPhoto>.self, from: data)
+                updateDataSource(data: nil, append: false, photos: photos)
+            }
+            catch {
+                print("Error")
+            }
+        }
+        else {
+            isFetching = true
+            NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: isFetching)
+            apiManager.fetchFlickrPhotos(with: text, page: pageNo) { (results) in
+                self.isFetching = false
+                guard let data = results.response else {
+                    NotificationCenter.default.post(name: NSNotification.Name("Error"), object: true)
+                    return
+                }
+                NotificationCenter.default.post(name: NSNotification.Name("In Process"), object: self.isFetching)
+                self.totalPages = data.pages
+                self.updateDataSource(data: data, append: pageNo != 1)
+            }
+        }
     }
 }
